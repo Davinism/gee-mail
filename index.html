@@ -1,18 +1,84 @@
 <html>
 	<head>
 		<script src="js/mail-generator.js"></script>
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 		<link href="css/style.css" rel="stylesheet" media="screen">
+		<title>Gee-Mail</title>
     <script>
       window.onload = function(){
         // ALL OF YOUR JAVASCRIPT CODE SHOULD GO HERE. 
         // We have to use window.onload so your JavaScript doesn't execute until the page has loaded and all HTML has been downloaded to your browser
-        
+        var timeInterval = 10000;			// Set the time interval for the setInterval function.
+
+        // This for-loop is used to populate the page with all our messages generated from the loadGeeMails() function.
+    	for (var ii = 0; ii < window.geemails.length; ii++) {
+    		var newList = $('<li>').addClass('row').append(function() {
+    			return "<span class='sender'>" + window.geemails[ii].sender + "</span>" + "<span class='subject'>" + window.geemails[ii].subject + "</span>" + "<span class='date'>" + window.geemails[ii].date + "</span>";
+    		});
+    		newList.appendTo('.messages ul');
+
+    		$('<div>').addClass('body').append(window.geemails[ii].body).appendTo('.messages ul');
+    	}
+
+    	// This command below hides all of the message bodies when the page first loads.
+    	$('.body').hide();
+
+    	// The command below initializes and appends the number of messages right next to "Inbox".
+    	$('#inbox strong').text(function() {
+    		return "Inbox" + " (" + window.geemails.length + ")";
+    	});
+
+    	// We create a click event here to toggle between showing and hiding our message body when its corresponding row is clicked.
+    	$('.row').click(function() {
+    		$(this).next().toggle();
+    	});
+
+    	//Here, we set our setInterval function that generates and prepends new messages to the inbox. It also updates the Inbox count.
+    	setInterval(function() {
+    		var newMessage = getNewMessage();
+    		window.geemails.unshift(newMessage);
+
+    		$('<div>').addClass('body').prepend(window.geemails[0].body).prependTo('.messages ul');
+
+    		var newList2 = $('<li>').addClass('new_row').prepend(function() {
+    			return "<span class='sender'>" + window.geemails[0].sender + "</span>" + "<span class='subject'>" + window.geemails[0].subject + "</span>" + "<span class='date'>" + window.geemails[0].date + "</span>";
+    		});
+    		newList2.prependTo('.messages ul');
+
+    		$('#inbox strong').text(function() {
+    			return  "Inbox" + " (" + window.geemails.length + ")";
+    		});
+
+    		$('.new_row').click(function() {
+    			$(this).next().toggle();
+    		});
+
+    	}, timeInterval);
+
       };
     </script>
 	</head>
 	<body>
 		<div class="container" id="main">
-			Build Me!
+			<h1>Gee-Mail</h1>
+		</div>
+
+		<div class="sidebar">
+			<ul>
+				<div class="button">Compose</div>
+				<li id="inbox" class="option"><strong></strong></li>
+				<li class="option">Starred</li>
+				<li class="option">Important</li>
+				<li class="option">Sent</li>
+				<li class="option">Drafts</li>
+				<li class="option">Spam</li>
+				<li class="option">Trash</li>
+			</ul>
+		</div>
+
+		<div class="messages">
+			<ul>
+			</ul>
 		</div>
 	</body>
 </html>
